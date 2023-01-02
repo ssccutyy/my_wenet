@@ -38,7 +38,14 @@ class CTC(torch.nn.Module):
         super().__init__()
         eprojs = encoder_output_size
         self.dropout_rate = dropout_rate
-        self.ctc_lo = torch.nn.Linear(eprojs, odim)
+        #self.ctc_lo = torch.nn.Linear(eprojs, odim)
+
+        self.ctc_lo = torch.nn.Sequential(
+            torch.nn.Linear(eprojs, 1024),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(dropout_rate),
+            torch.nn.Linear(1024, odim),
+        )
 
         reduction_type = "sum" if reduce else "none"
         self.ctc_loss = torch.nn.CTCLoss(reduction=reduction_type)
